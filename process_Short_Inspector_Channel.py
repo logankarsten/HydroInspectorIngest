@@ -23,8 +23,8 @@ warningTitle = 'Warning_Process_Short_Channel_Inspector'
 lockFile = '/home/karsten/tmp/Process_Short_Channel_Inspector.LOCK'
 completeDir = '/d4/karsten/NWM_INSPECTOR/Short'
 email = 'karsten@ucar.edu'
-hoursBack = 36
-hoursLag = 3
+hoursBack = 12
+hoursLag = 2
 webDirTmp = '/d2/karsten/INSPECTOR_TMP'
 webDirFinal = '/d2/hydroinspector_data/tmp/conus/short_range'
 metaLandPath = '/d4/karsten/NWM_INSPECTOR/geospatialMetaData/WRF_Hydro_NWM_v1.1_geospatial_data_template_land_GIS.nc'
@@ -44,8 +44,6 @@ dNow = datetime.datetime.now()
 for hourBack in range(hoursBack,hoursLag,-1):
 	# Establish datetime objects
 	dCycle = dNow - datetime.timedelta(seconds=hourBack*3600)
-
-	print dCycle.strftime('%Y-%m-%d %H')
 
 	hrStrCycle = dCycle.strftime('%H')
 	dStr1Cycle = dCycle.strftime('%Y%m%d%H')
@@ -67,7 +65,6 @@ for hourBack in range(hoursBack,hoursLag,-1):
 		completePath = completeDir + '/nwm.t' + hrStrCycle + \
    	               'z.short_range.channel_rt.tm00.conus_' + dStr1Cycle + \
 	                  '_f' + fStr + '.COMPLETE'
-		print(completePath)
 		fileDPath = 'nwm.t' + hrStrCycle + 'z.short_range.channel_rt.f' + fStr + '.conus.nc.gz'
 		filePath = 'nwm.t' + hrStrCycle + 'z.short_range.channel_rt.f' + fStr + '.conus.nc'
 		fileCompress = 'nwm.' + dStr2Cycle + '_t' + hrStrCycle + '_f' + fStr + '.short_range.' + \
@@ -81,9 +78,8 @@ for hourBack in range(hoursBack,hoursLag,-1):
 			inspectorMod.shuffleFile(fileCompress,webDirFinal,webDirTmp,errTitle,email,lockFile)
 			inspectorMod.genFlag(completePath,errTitle,email,lockFile)
 			inspectorMod.checkFile(completePath,errTitle,email,lockFile)
-
-		# Cleanup temporary files generated.
-		inspectorMod.cleanOutDir(completeDir,errTitle,email,lockFile)
+			inspectorMod.deleteFile(completeDir + "/" + filePath,errTitle,email,lockFile)
+			inspectorMod.deleteFile(completeDir + "/" + fileCompress,errTitle,email,lockFile)
 
 # Delete lock file
 inspectorMod.deleteFile(lockFile,errTitle,email,lockFile)

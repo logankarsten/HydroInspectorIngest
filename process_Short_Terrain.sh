@@ -7,6 +7,9 @@
 # National Center for Atmospheric Research
 # Research Applications Laboratory
 
+# Source bash environment
+. $HOME/.profile
+
 cd /d4/karsten/NWM_INSPECTOR/inspector_processing
 python process_Short_Inspector_Terrain.py
 

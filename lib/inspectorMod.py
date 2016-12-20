@@ -6,6 +6,7 @@
 # Research Applications Laboratory
 
 # Import necessary libraries
+import multiprocessing
 import os
 import sys
 import smtplib
@@ -13,6 +14,9 @@ from ftplib import FTP
 from email.mime.text import MIMEText
 import glob
 import subprocess
+
+def fetchFTP(ftp,cmd,outDir,fileDownload):
+	ftp.retrbinary(cmd,open(outDir + "/" + fileDownload,'wb').write)
 
 def errOut(msgContent,emailTitle,emailRec,lockFile):
    msg = MIMEText(msgContent)
@@ -115,7 +119,14 @@ def downloadNWM(ftpDir,outDir,fileDownload,fileTmp,errTitle,emailAddy,lockFile):
    # Download gzip file
    try:
       cmd = "RETR " + fileDownload
-      ftp.retrbinary(cmd,open(outDir + "/" + fileDownload,'wb').write)
+      p = multiprocessing.Process(target=fetchFTP,args=(ftp,cmd,outDir,fileDownload,))
+      p.start()
+      p.join(300)
+      if p.is_alive():
+         warningMsg = "ERROR: Download Timeout For: " + fileDownload
+         p.terminate()
+         p.join()
+         warningOut(warningMsg,errTitle,emailAddy)
    except:
       errMsg = "ERROR: Unable to Download: " + fileDownload
       errOut(errMsg,errTitle,emailAddy,lockFile)

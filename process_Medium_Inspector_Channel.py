@@ -45,8 +45,6 @@ for hourBack in range(hoursBack,hoursLag,-1):
 	# Establish datetime objects
 	dCycle = dNow - datetime.timedelta(seconds=hourBack*3600)
 
-	print dCycle.strftime('%Y-%m-%d %H')
-
 	hrStrCycle = dCycle.strftime('%H')
 	dStr1Cycle = dCycle.strftime('%Y%m%d%H')
 	dStr2Cycle = dCycle.strftime('%Y%m%d')
@@ -68,7 +66,6 @@ for hourBack in range(hoursBack,hoursLag,-1):
 			completePath = completeDir + '/nwm.t' + hrStrCycle + \
 	   	               'z.medium_range.channel_rt.tm00.conus_' + dStr1Cycle + \
 		                  '_f' + fStr + '.COMPLETE'
-			print(completePath)
 			fileDPath = 'nwm.t' + hrStrCycle + 'z.medium_range.channel_rt.f' + fStr + '.conus.nc.gz'
 			filePath = 'nwm.t' + hrStrCycle + 'z.medium_range.channel_rt.f' + fStr + '.conus.nc'
 			fileCompress = 'nwm.' + dStr2Cycle + '_t' + hrStrCycle + '_f' + fStr + '.medium_range.' + \
@@ -79,12 +76,11 @@ for hourBack in range(hoursBack,hoursLag,-1):
 				compressMod.compressNWM(completeDir + '/' + filePath,completeDir + '/' + fileCompress, \
 				                        'channel_rt',metaChanPath,errTitle,email,lockFile)
 				inspectorMod.copyToWeb(completeDir + '/' + fileCompress,webDirTmp,errTitle,email,lockFile)
-				#inspectorMod.shuffleFile(fileCompress,webDirFinal,webDirTmp,errTitle,email,lockFile)
-				#inspectorMod.genFlag(completePath,errTitle,email,lockFile)
-				#inspectorMod.checkFile(completePath,errTitle,email,lockFile)
-
-			# Cleanup temporary files generated.
-			inspectorMod.cleanOutDir(completeDir,errTitle,email,lockFile)
+				inspectorMod.shuffleFile(fileCompress,webDirFinal,webDirTmp,errTitle,email,lockFile)
+				inspectorMod.genFlag(completePath,errTitle,email,lockFile)
+				inspectorMod.checkFile(completePath,errTitle,email,lockFile)
+				inspectorMod.deleteFile(completeDir + "/" + filePath,errTitle,email,lockFile)
+				inspectorMod.deleteFile(completeDir + "/" + fileCompress,errTitle,email,lockFile)
 
 # Delete lock file
 inspectorMod.deleteFile(lockFile,errTitle,email,lockFile)

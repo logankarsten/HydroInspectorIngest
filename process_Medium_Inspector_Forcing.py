@@ -18,9 +18,9 @@ import compressMod
 import inspectorMod
 
 # Establish workflow variables
-errTitle = 'Error_Process_Medium_Channel_Inspector'
-warningTitle = 'Warning_Process_Medium_Channel_Inspector'
-lockFile = '/home/karsten/tmp/Process_Medium_Channel_Inspector.LOCK'
+errTitle = 'Error_Process_Medium_Forcing_Inspector'
+warningTitle = 'Warning_Process_Medium_Forcing_Inspector'
+lockFile = '/home/karsten/tmp/Process_Medium_Forcing_Inspector.LOCK'
 completeDir = '/d4/karsten/NWM_INSPECTOR/Medium'
 email = 'karsten@ucar.edu'
 hoursBack = 36
@@ -45,8 +45,6 @@ for hourBack in range(hoursBack,hoursLag,-1):
 	# Establish datetime objects
 	dCycle = dNow - datetime.timedelta(seconds=hourBack*3600)
 
-	print dCycle.strftime('%Y-%m-%d %H')
-
 	hrStrCycle = dCycle.strftime('%H')
 	dStr1Cycle = dCycle.strftime('%Y%m%d%H')
 	dStr2Cycle = dCycle.strftime('%Y%m%d')
@@ -68,26 +66,22 @@ for hourBack in range(hoursBack,hoursLag,-1):
 			completePath = completeDir + '/nwm.t' + hrStrCycle + \
 		                  'z.medium_range.fe.tm00.conus_' + dStr1Cycle + \
 								'_f' + fStr + '.COMPLETE'	   
-			print completePath
 			fileDPath = 'nwm.t' + hrStrCycle + 'z.fe_medium_range.f' + fStr + '.conus.nc.gz'
 			filePath = 'nwm.t' + hrStrCycle + 'z.fe_medium_range.f' + fStr + '.conus.nc'
-			fileCompress = 'nwm.' + dStr2Cycle + '_t' + hrStrCycle + '_f' + fStr + '.medium_range.' + \
-		                  'fe.conus.COMPRESS.nc'
+			fileCompress = 'nwm.' + dStr2Cycle + '_t' + hrStrCycle + '_f' + fStr + '.fe_medium_range.' + \
+		                  'conus.COMPRESS.nc'
 			ftpDir = '/pub/data/nccf/com/nwm/prod/nwm.' + dStr2Cycle + '/fe_medium_range'
-			print filePath
-			print ftpDir
 			if not os.path.isfile(completePath):
 				inspectorMod.downloadNWM(ftpDir,completeDir,fileDPath,filePath,errTitle,email,lockFile)
 				compressMod.compressNWM(completeDir + '/' + filePath,completeDir + '/' + fileCompress, \
 				                        'fe',metaLandPath,errTitle,email,lockFile,initTime=dInit,\
 		                              validTime=dValid)
 				inspectorMod.copyToWeb(completeDir + '/' + fileCompress,webDirTmp,errTitle,email,lockFile)
-			#	inspectorMod.shuffleFile(fileCompress,webDirFinal,webDirTmp,errTitle,email,lockFile)
-			#	inspectorMod.genFlag(completePath,errTitle,email,lockFile)
-			#	inspectorMod.checkFile(completePath,errTitle,email,lockFile)
-
-			# Cleanup temporary files generated.
-			inspectorMod.cleanOutDir(completeDir,errTitle,email,lockFile)
+				inspectorMod.shuffleFile(fileCompress,webDirFinal,webDirTmp,errTitle,email,lockFile)
+				inspectorMod.genFlag(completePath,errTitle,email,lockFile)
+				inspectorMod.checkFile(completePath,errTitle,email,lockFile)
+				inspectorMod.deleteFile(completeDir + "/" + filePath,errTitle,email,lockFile)
+				inspectorMod.deleteFile(completeDir + "/" + fileCompress,errTitle,email,lockFile)
 
 # Delete lock file
 inspectorMod.deleteFile(lockFile,errTitle,email,lockFile)

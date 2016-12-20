@@ -11,7 +11,7 @@ import os
 import sys
 
 # Append path to include custom libraries for this workflow
-sys.path.append('./lib')
+sys.path.append('/d4/karsten/NWM_INSPECTOR/inspector_processing/lib')
 
 # Import custom libraries for this workflow
 import compressMod
@@ -24,7 +24,7 @@ lockFile = '/home/karsten/tmp/Process_AAC_Inspector.LOCK'
 completeDir = '/d4/karsten/NWM_INSPECTOR/AAC'
 email = 'karsten@ucar.edu'
 hoursBack = 36
-hoursLag = 3
+hoursLag = 2
 webDirTmp = '/d2/karsten/INSPECTOR_TMP'
 webDirFinal = '/d2/hydroinspector_data/tmp/conus/analysis_assimilation'
 metaLandPath = '/d4/karsten/NWM_INSPECTOR/geospatialMetaData/WRF_Hydro_NWM_v1.1_geospatial_data_template_land_GIS.nc'
@@ -47,7 +47,6 @@ for hourBack in range(hoursBack,hoursLag,-1):
 	dValid = dCurrent
 	dInit = dCurrent - datetime.timedelta(seconds=3*3600)
 
-	print dCurrent.strftime('%Y-%m-%d %H')
 
 	hrStrCurrent = dCurrent.strftime('%H')
 	dStr1Current = dCurrent.strftime('%Y%m%d%H')
@@ -62,7 +61,6 @@ for hourBack in range(hoursBack,hoursLag,-1):
 	completePath = completeDir + '/nwm.t' + hrStrCurrent + \
                   'z.analysis_assim.channel_rt.tm00.conus_' + dStr1Current + \
                   '_f000.COMPLETE'
-	print(completePath)
 	fileDPath = 'nwm.t' + hrStrCurrent + 'z.analysis_assim.channel_rt.tm00.conus.nc.gz'
 	filePath = 'nwm.t' + hrStrCurrent + 'z.analysis_assim.channel_rt.tm00.conus.nc'
 	fileCompress = 'nwm.' + dStr2Current + '_t' + hrStrCurrent + '_f000.analysis_assim.' + \
@@ -76,12 +74,13 @@ for hourBack in range(hoursBack,hoursLag,-1):
 		inspectorMod.shuffleFile(fileCompress,webDirFinal,webDirTmp,errTitle,email,lockFile)
 		inspectorMod.genFlag(completePath,errTitle,email,lockFile)
 		inspectorMod.checkFile(completePath,errTitle,email,lockFile)
+		inspectorMod.deleteFile(completeDir + "/" + filePath,errTitle,email,lockFile)
+		inspectorMod.deleteFile(completeDir + "/" + fileCompress,errTitle,email,lockFile)
 
 	# Land output
 	completePath = completeDir + '/nwm.t' + hrStrCurrent + \
                   'z.analysis_assim.land.tm00.conus_' + dStr1Current + \
                   '_f000.COMPLETE'
-	print completePath
 	fileDPath = 'nwm.t' + hrStrCurrent + 'z.analysis_assim.land.tm00.conus.nc.gz'
 	filePath = 'nwm.t' + hrStrCurrent + 'z.analysis_assim.land.tm00.conus.nc'
 	fileCompress = 'nwm.' + dStr2Current + '_t' + hrStrCurrent + '_f000.analysis_assim.' + \
@@ -95,12 +94,13 @@ for hourBack in range(hoursBack,hoursLag,-1):
 		inspectorMod.shuffleFile(fileCompress,webDirFinal,webDirTmp,errTitle,email,lockFile)
 		inspectorMod.genFlag(completePath,errTitle,email,lockFile)
 		inspectorMod.checkFile(completePath,errTitle,email,lockFile)
+		inspectorMod.deleteFile(completeDir + "/" + filePath,errTitle,email,lockFile)
+		inspectorMod.deleteFile(completeDir + "/" + fileCompress,errTitle,email,lockFile)
 
 	# Terrain output
 	completePath = completeDir + '/nwm.t' + hrStrCurrent + \
                   'z.analysis_assim.terrain_rt.tm00.conus_' + dStr1Current + \
                   '_f000.COMPLETE'
-	print completePath
 	fileDPath = 'nwm.t' + hrStrCurrent + 'z.analysis_assim.terrain_rt.tm00.conus.nc.gz'
 	filePath = 'nwm.t' + hrStrCurrent + 'z.analysis_assim.terrain_rt.tm00.conus.nc'
 	fileCompress = 'nwm.' + dStr2Current + '_t' + hrStrCurrent + '_f000.analysis_assim.' + \
@@ -114,19 +114,18 @@ for hourBack in range(hoursBack,hoursLag,-1):
 		inspectorMod.shuffleFile(fileCompress,webDirFinal,webDirTmp,errTitle,email,lockFile)
 		inspectorMod.genFlag(completePath,errTitle,email,lockFile)
 		inspectorMod.checkFile(completePath,errTitle,email,lockFile)
+		inspectorMod.deleteFile(completeDir + "/" + filePath,errTitle,email,lockFile)
+		inspectorMod.deleteFile(completeDir + "/" + fileCompress,errTitle,email,lockFile)
 
 	# Forcing
 	completePath = completeDir + '/nwm.t' + hrStrCurrent + \
                   'z.analysis_assim.fe.tm00.conus_' + dStr1Current + \
                   '_f000.COMPLETE'
-	print completePath
 	fileDPath = 'nwm.t' + hrStrCurrent + 'z.fe_analysis_assim.tm00.conus.nc.gz'
 	filePath = 'nwm.t' + hrStrCurrent + 'z.fe_analysis_assim.tm00.conus.nc'
-	fileCompress = 'nwm.' + dStr2Current + '_t' + hrStrCurrent + '_f000.analysis_assim.' + \
-                  'fe.conus.COMPRESS.nc'
+	fileCompress = 'nwm.' + dStr2Current + '_t' + hrStrCurrent + '_f000.fe_analysis_assim.' + \
+                  'conus.COMPRESS.nc'
 	ftpDir = '/pub/data/nccf/com/nwm/prod/nwm.' + dStr2Current + '/fe_analysis_assim'
-	print filePath
-	print ftpDir
 	if not os.path.isfile(completePath):
 		inspectorMod.downloadNWM(ftpDir,completeDir,fileDPath,filePath,errTitle,email,lockFile)
 		compressMod.compressNWM(completeDir + '/' + filePath,completeDir + '/' + fileCompress, \
@@ -136,9 +135,8 @@ for hourBack in range(hoursBack,hoursLag,-1):
 		inspectorMod.shuffleFile(fileCompress,webDirFinal,webDirTmp,errTitle,email,lockFile)
 		inspectorMod.genFlag(completePath,errTitle,email,lockFile)
 		inspectorMod.checkFile(completePath,errTitle,email,lockFile)
-
-	# Cleanup temporary files generated.
-	inspectorMod.cleanOutDir(completeDir,errTitle,email,lockFile)
+		inspectorMod.deleteFile(completeDir + "/" + filePath,errTitle,email,lockFile)
+		inspectorMod.deleteFile(completeDir + "/" + fileCompress,errTitle,email,lockFile)
 
 # Delete lock file
 inspectorMod.deleteFile(lockFile,errTitle,email,lockFile)
