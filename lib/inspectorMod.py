@@ -15,8 +15,12 @@ from email.mime.text import MIMEText
 import glob
 import subprocess
 
-def fetchFTP(ftp,cmd,outDir,fileDownload):
-	ftp.retrbinary(cmd,open(outDir + "/" + fileDownload,'wb').write)
+def fetchFTP(ftp,cmd,outDir,fileDownload,errTitle,emailAddy,lockFile):
+	try:
+		ftp.retrbinary(cmd,open(outDir + "/" + fileDownload,'wb').write)
+	except:
+		errMsg = "ERROR: Error in downloading: " + fileDownload
+		errOut(errMsg,errTitle,emailAddy,lockFile)
 
 def errOut(msgContent,emailTitle,emailRec,lockFile):
    msg = MIMEText(msgContent)
@@ -119,7 +123,7 @@ def downloadNWM(ftpDir,outDir,fileDownload,fileTmp,errTitle,emailAddy,lockFile):
    # Download gzip file
    try:
       cmd = "RETR " + fileDownload
-      p = multiprocessing.Process(target=fetchFTP,args=(ftp,cmd,outDir,fileDownload,))
+      p = multiprocessing.Process(target=fetchFTP,args=(ftp,cmd,outDir,fileDownload,errTitle,emailAddy,lockFile,))
       p.start()
       p.join(300)
       if p.is_alive():

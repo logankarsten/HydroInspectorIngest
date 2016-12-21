@@ -70,8 +70,6 @@ for hourBack in range(hoursBack,hoursLag,-1):
 		fileCompress = 'nwm.' + dStr2Cycle + '_t' + hrStrCycle + '_f' + fStr + '.fe_short_range.' + \
 	                  'conus.COMPRESS.nc'
 		ftpDir = '/pub/data/nccf/com/nwm/prod/nwm.' + dStr2Cycle + '/fe_short_range'
-		print filePath
-		print ftpDir
 		if not os.path.isfile(completePath):
 			inspectorMod.downloadNWM(ftpDir,completeDir,fileDPath,filePath,errTitle,email,lockFile)
 			compressMod.compressNWM(completeDir + '/' + filePath,completeDir + '/' + fileCompress, \
