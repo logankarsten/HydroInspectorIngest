@@ -168,7 +168,7 @@ for dayBack in range(daysBack,-1,-1):
 		inspectorMod.copyToWeb(fileCompress,webDirTmp,errTitle,email,lockFile)
 
 		# Final atomic move to final directory for hydroInspector
-		#inspectorMod.shuffleFile(pathCompress,webDirFinal,webDirTmp,errTitle,email,lockFile)
+		inspectorMod.shuffleFile(pathCompress,webDirFinal,webDirTmp,errTitle,email,lockFile)
 
 		# Create complete flag
 		inspectorMod.genFlag(completeFlag,errTitle,email,lockFile)
