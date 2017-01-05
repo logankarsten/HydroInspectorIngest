@@ -50,7 +50,7 @@ for dayBack in range(daysBack,-1,-1):
 	dMod = datetime.datetime.strptime(dCurrent.strftime('%Y-%m-%d') + ' 06:00:00','%Y-%m-%d %H:%M:%S')
 
 	dt = dMod - epoch
-	dtMin = int(dt.seconds/60.0)
+	dtMin = int(dt.days*1440) + int(dt.seconds/60.0)
 
 	fileIn = snodasInDir + "/SNODAS_REGRIDDED_" + dCurrent.strftime("%Y%m%d") + ".nc"
 	completeFlag = completeDir + "/SNODAS_CONUS_" + dCurrent.strftime('%Y%m%d') + '.COMPLETE'
@@ -98,7 +98,7 @@ for dayBack in range(daysBack,-1,-1):
 		# Create global attributes
 		idOut.TITLE = "Snow Data Assimilation System (SNODAS) Analysis"
 		idOut.model_initialization_time = dCurrent.strftime('%Y-%m-%d') + '_06:00:00'
-		idOut.model_valid_time = dCurrent.strftime('%Y-%m-%d') + '_06:00:00'
+		idOut.model_output_valid_time = dCurrent.strftime('%Y-%m-%d') + '_06:00:00'
 		idOut.Conventions = "CF-1.6"
 		idOut.Source_Software = "/d4/karsten/NWM_INSPECTOR/inspector_processing/process_Snodas_Inspector.py"
 		idOut.history = "Created " + dNow.strftime('%a %b %d %H:%M:%S %Y')
@@ -143,6 +143,7 @@ for dayBack in range(daysBack,-1,-1):
 		sweVar.esri_pe_string = idMeta.variables['ProjectionCoordinateSystem'].esri_pe_string
 		sweVar.valid_range = [0,100000.0]
 		sweVar.missing_value = -9999.
+		sweVar.grid_mapping = "ProjectionCoordinateSystem"
 
 		sdVar.units = "mm"
 		sdVar.long_name = "Snow depth"
@@ -150,6 +151,7 @@ for dayBack in range(daysBack,-1,-1):
 		sdVar.esri_pe_string = idMeta.variables['ProjectionCoordinateSystem'].esri_pe_string
 		sdVar.valid_range = [0.0,100000.0]
 		sdVar.missing_value = -9999.
+		sdVar.grid_mapping = "ProjectionCoordinateSystem"
 
 		# Place data into variables
 		xVar[:] = idMeta.variables['x'][:]
