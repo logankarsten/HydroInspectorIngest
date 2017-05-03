@@ -53,7 +53,7 @@ for hourBack in range(hoursBack,hoursLag,-1):
 		# Loop through forecast hours
 		for hrFcst in range(3,243,3):
 			dInit = dCycle
-			dValid = dCycle + datetime.timedelta(seconds=3*3600)
+			dValid = dCycle + datetime.timedelta(seconds=hrFcst*3600)
 			fStr = str(hrFcst)
 			fStr = fStr.zfill(3)
 
