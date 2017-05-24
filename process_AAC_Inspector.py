@@ -23,10 +23,10 @@ warningTitle = 'Warning_Process_AAC_Inspector'
 lockFile = '/home/karsten/tmp/Process_AAC_Inspector.LOCK'
 completeDir = '/d4/karsten/NWM_INSPECTOR/AAC'
 email = 'karsten@ucar.edu'
-hoursBack = 36
-hoursLag = 2
+hoursBack = 24
+hoursLag = 0
 webDirTmp = '/d2/karsten/INSPECTOR_TMP'
-webDirFinal = '/d2/hydroinspector_data/tmp/conus/analysis_assimilation'
+webDirFinal = '/d2/hydroinspector_data/tmp/conus/prod/analysis_assimilation'
 metaLandPath = '/d4/karsten/NWM_INSPECTOR/geospatialMetaData/WRF_Hydro_NWM_v1.1_geospatial_data_template_land_GIS.nc'
 metaChanPath = '/d4/karsten/NWM_INSPECTOR/geospatialMetaData/WRF_Hydro_NWM_v1.1_geospatial_data_template_channel_point_netcdf.nc'
 metaRtPath = '/d4/karsten/NWM_INSPECTOR/geospatialMetaData/WRF_Hydro_NWM_v1.1_geospatial_data_template_terrain_GIS.nc'
@@ -61,81 +61,77 @@ for hourBack in range(hoursBack,hoursLag,-1):
 	completePath = completeDir + '/nwm.t' + hrStrCurrent + \
                   'z.analysis_assim.channel_rt.tm00.conus_' + dStr1Current + \
                   '_f000.COMPLETE'
-	fileDPath = 'nwm.t' + hrStrCurrent + 'z.analysis_assim.channel_rt.tm00.conus.nc.gz'
+	fileDPath = 'nwm.t' + hrStrCurrent + 'z.analysis_assim.channel_rt.tm00.conus.nc'
 	filePath = 'nwm.t' + hrStrCurrent + 'z.analysis_assim.channel_rt.tm00.conus.nc'
 	fileCompress = 'nwm.' + dStr2Current + '_t' + hrStrCurrent + '_f000.analysis_assim.' + \
                   'channel_rt.conus.COMPRESS.nc'
 	ftpDir = '/pub/data/nccf/com/nwm/prod/nwm.' + dStr2Current + '/analysis_assim'
 	if not os.path.isfile(completePath):
 		inspectorMod.downloadNWM(ftpDir,completeDir,fileDPath,filePath,errTitle,email,lockFile)
-		compressMod.compressNWM(completeDir + '/' + filePath,completeDir + '/' + fileCompress, \
-		                        'channel_rt',metaChanPath,errTitle,email,lockFile)
+		inspectorMod.renameFile(completeDir + '/' + fileDPath,completeDir + '/' + fileCompress, \
+                              errTitle,email,lockFile)
 		inspectorMod.copyToWeb(completeDir + '/' + fileCompress,webDirTmp,errTitle,email,lockFile)
 		inspectorMod.shuffleFile(fileCompress,webDirFinal,webDirTmp,errTitle,email,lockFile)
 		inspectorMod.genFlag(completePath,errTitle,email,lockFile)
 		inspectorMod.checkFile(completePath,errTitle,email,lockFile)
-		inspectorMod.deleteFile(completeDir + "/" + filePath,errTitle,email,lockFile)
 		inspectorMod.deleteFile(completeDir + "/" + fileCompress,errTitle,email,lockFile)
 
 	# Land output
 	completePath = completeDir + '/nwm.t' + hrStrCurrent + \
                   'z.analysis_assim.land.tm00.conus_' + dStr1Current + \
                   '_f000.COMPLETE'
-	fileDPath = 'nwm.t' + hrStrCurrent + 'z.analysis_assim.land.tm00.conus.nc.gz'
+	fileDPath = 'nwm.t' + hrStrCurrent + 'z.analysis_assim.land.tm00.conus.nc'
 	filePath = 'nwm.t' + hrStrCurrent + 'z.analysis_assim.land.tm00.conus.nc'
 	fileCompress = 'nwm.' + dStr2Current + '_t' + hrStrCurrent + '_f000.analysis_assim.' + \
                   'land.conus.COMPRESS.nc'
 	ftpDir = '/pub/data/nccf/com/nwm/prod/nwm.' + dStr2Current + '/analysis_assim'
 	if not os.path.isfile(completePath):
 		inspectorMod.downloadNWM(ftpDir,completeDir,fileDPath,filePath,errTitle,email,lockFile)
-		compressMod.compressNWM(completeDir + '/' + filePath,completeDir + '/' + fileCompress, \
-		                        'land',metaLandPath,errTitle,email,lockFile)
+		inspectorMod.renameFile(completeDir + '/' + fileDPath,completeDir + '/' + fileCompress, \
+                              errTitle,email,lockFile)
 		inspectorMod.copyToWeb(completeDir + '/' + fileCompress,webDirTmp,errTitle,email,lockFile)
 		inspectorMod.shuffleFile(fileCompress,webDirFinal,webDirTmp,errTitle,email,lockFile)
 		inspectorMod.genFlag(completePath,errTitle,email,lockFile)
 		inspectorMod.checkFile(completePath,errTitle,email,lockFile)
-		inspectorMod.deleteFile(completeDir + "/" + filePath,errTitle,email,lockFile)
 		inspectorMod.deleteFile(completeDir + "/" + fileCompress,errTitle,email,lockFile)
 
 	# Terrain output
 	completePath = completeDir + '/nwm.t' + hrStrCurrent + \
                   'z.analysis_assim.terrain_rt.tm00.conus_' + dStr1Current + \
                   '_f000.COMPLETE'
-	fileDPath = 'nwm.t' + hrStrCurrent + 'z.analysis_assim.terrain_rt.tm00.conus.nc.gz'
+	fileDPath = 'nwm.t' + hrStrCurrent + 'z.analysis_assim.terrain_rt.tm00.conus.nc'
 	filePath = 'nwm.t' + hrStrCurrent + 'z.analysis_assim.terrain_rt.tm00.conus.nc'
 	fileCompress = 'nwm.' + dStr2Current + '_t' + hrStrCurrent + '_f000.analysis_assim.' + \
                   'terrain_rt.conus.COMPRESS.nc'
 	ftpDir = '/pub/data/nccf/com/nwm/prod/nwm.' + dStr2Current + '/analysis_assim'
 	if not os.path.isfile(completePath):
 		inspectorMod.downloadNWM(ftpDir,completeDir,fileDPath,filePath,errTitle,email,lockFile)
-		compressMod.compressNWM(completeDir + '/' + filePath,completeDir + '/' + fileCompress, \
-		                        'terrain_rt',metaRtPath,errTitle,email,lockFile)
+		inspectorMod.renameFile(completeDir + '/' + fileDPath,completeDir + '/' + fileCompress, \
+                              errTitle,email,lockFile)
 		inspectorMod.copyToWeb(completeDir + '/' + fileCompress,webDirTmp,errTitle,email,lockFile)
 		inspectorMod.shuffleFile(fileCompress,webDirFinal,webDirTmp,errTitle,email,lockFile)
 		inspectorMod.genFlag(completePath,errTitle,email,lockFile)
 		inspectorMod.checkFile(completePath,errTitle,email,lockFile)
-		inspectorMod.deleteFile(completeDir + "/" + filePath,errTitle,email,lockFile)
 		inspectorMod.deleteFile(completeDir + "/" + fileCompress,errTitle,email,lockFile)
 
 	# Forcing
 	completePath = completeDir + '/nwm.t' + hrStrCurrent + \
                   'z.analysis_assim.fe.tm00.conus_' + dStr1Current + \
                   '_f000.COMPLETE'
-	fileDPath = 'nwm.t' + hrStrCurrent + 'z.fe_analysis_assim.tm00.conus.nc.gz'
-	filePath = 'nwm.t' + hrStrCurrent + 'z.fe_analysis_assim.tm00.conus.nc'
+	fileDPath = 'nwm.t' + hrStrCurrent + 'z.analysis_assim.forcing.tm00.conus.nc'
+	filePath = 'nwm.t' + hrStrCurrent + 'z.analysis_assim.forcing.tm00.conus.nc'
 	fileCompress = 'nwm.' + dStr2Current + '_t' + hrStrCurrent + '_f000.fe_analysis_assim.' + \
                   'conus.COMPRESS.nc'
-	ftpDir = '/pub/data/nccf/com/nwm/prod/nwm.' + dStr2Current + '/fe_analysis_assim'
+	ftpDir = '/pub/data/nccf/com/nwm/prod/nwm.' + dStr2Current + '/forcing_analysis_assim'
 	if not os.path.isfile(completePath):
 		inspectorMod.downloadNWM(ftpDir,completeDir,fileDPath,filePath,errTitle,email,lockFile)
-		compressMod.compressNWM(completeDir + '/' + filePath,completeDir + '/' + fileCompress, \
-		                        'fe',metaLandPath,errTitle,email,lockFile,initTime=dInit,\
-                              validTime=dValid)
+		compressMod.compressV11Forcing(completeDir + '/' + fileDPath,errTitle,email,lockFile)
+		inspectorMod.renameFile(completeDir + '/' + fileDPath,completeDir + '/' + fileCompress, \
+                              errTitle,email,lockFile)
 		inspectorMod.copyToWeb(completeDir + '/' + fileCompress,webDirTmp,errTitle,email,lockFile)
 		inspectorMod.shuffleFile(fileCompress,webDirFinal,webDirTmp,errTitle,email,lockFile)
 		inspectorMod.genFlag(completePath,errTitle,email,lockFile)
 		inspectorMod.checkFile(completePath,errTitle,email,lockFile)
-		inspectorMod.deleteFile(completeDir + "/" + filePath,errTitle,email,lockFile)
 		inspectorMod.deleteFile(completeDir + "/" + fileCompress,errTitle,email,lockFile)
 
 # Delete lock file

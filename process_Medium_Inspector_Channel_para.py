@@ -1,6 +1,6 @@
-# Python program to pull v1.0 NWM output from NCEP's FTP,
-# process the output into compressed post-processed files,
-# then push them to hydro-c1-web for display on hydroInspector.
+# Program for pulling NWM parallel output (Beta) from NCEP's
+# para NOMADS HTTP server. Data is not operational, so we will
+# pull whatever is available.
 
 # Logan Karsten 
 # National Center for Atmospheric Research
@@ -18,18 +18,15 @@ import compressMod
 import inspectorMod
 
 # Establish workflow variables
-errTitle = 'Error_Process_Medium_Channel_Inspector'
-warningTitle = 'Warning_Process_Medium_Channel_Inspector'
-lockFile = '/home/karsten/tmp/Process_Medium_Channel_Inspector.LOCK'
-completeDir = '/d4/karsten/NWM_INSPECTOR/Medium'
+errTitle = 'Error_Process_Medium_Channel_Inspector_Parallel'
+warningTitle = 'Warning_Process_Medium_Channel_Para_Inspector_Parallel'
+lockFile = '/home/karsten/tmp/Process_Medium_Channel_Inspector_Parallel.LOCK'
+completeDir = '/d4/karsten/NWM_INSPECTOR/Medium_Para'
 email = 'karsten@ucar.edu'
 hoursBack = 36
 hoursLag = 5
-webDirTmp = '/d2/karsten/INSPECTOR_TMP'
-webDirFinal = '/d2/hydroinspector_data/tmp/conus/prod/medium_range'
-metaLandPath = '/d4/karsten/NWM_INSPECTOR/geospatialMetaData/WRF_Hydro_NWM_v1.1_geospatial_data_template_land_GIS.nc'
-metaChanPath = '/d4/karsten/NWM_INSPECTOR/geospatialMetaData/WRF_Hydro_NWM_v1.1_geospatial_data_template_channel_point_netcdf.nc'
-metaRtPath = '/d4/karsten/NWM_INSPECTOR/geospatialMetaData/WRF_Hydro_NWM_v1.1_geospatial_data_template_terrain_GIS.nc'
+webDirTmp = '/d2/karsten/INSPECTOR_PARA_TMP'
+webDirFinal = '/d2/hydroinspector_data/tmp/conus/para/medium_range'
 
 # Get PID from this process
 pid = os.getpid()
@@ -67,19 +64,18 @@ for hourBack in range(hoursBack,hoursLag,-1):
 	   	               'z.medium_range.channel_rt.tm00.conus_' + dStr1Cycle + \
 		                  '_f' + fStr + '.COMPLETE'
 			fileDPath = 'nwm.t' + hrStrCycle + 'z.medium_range.channel_rt.f' + fStr + '.conus.nc'
-			filePath = 'nwm.t' + hrStrCycle + 'z.medium_range.channel_rt.f' + fStr + '.conus.nc'
 			fileCompress = 'nwm.' + dStr2Cycle + '_t' + hrStrCycle + '_f' + fStr + '.medium_range.' + \
 		                  'channel_rt.conus.COMPRESS.nc'
-			ftpDir = '/pub/data/nccf/com/nwm/prod/nwm.' + dStr2Cycle + '/medium_range'
+			httpDir = 'http://para.nomads.ncep.noaa.gov/pub/data/nccf/com/nwm/para/nwm.' + dStr2Cycle + \
+                '/medium_range/'
 			if not os.path.isfile(completePath):
-				inspectorMod.downloadNWM(ftpDir,completeDir,fileDPath,filePath,errTitle,email,lockFile)
-				inspectorMod.renameFile(completeDir + '/' + fileDPath,completeDir + '/' + fileCompress, \
-                                    errTitle,email,lockFile)
-				inspectorMod.copyToWeb(completeDir + '/' + fileCompress,webDirTmp,errTitle,email,lockFile)
-				inspectorMod.shuffleFile(fileCompress,webDirFinal,webDirTmp,errTitle,email,lockFile)
-				inspectorMod.genFlag(completePath,errTitle,email,lockFile)
-				inspectorMod.checkFile(completePath,errTitle,email,lockFile)
-				inspectorMod.deleteFile(completeDir + "/" + fileCompress,errTitle,email,lockFile)
+				findStatus = inspectorMod.downloadNwmHTTP(httpDir,completeDir,fileDPath,fileCompress,errTitle,email,lockFile)
+				if findStatus == 1:
+					inspectorMod.copyToWeb(completeDir + '/' + fileCompress,webDirTmp,errTitle,email,lockFile)
+					inspectorMod.shuffleFile(fileCompress,webDirFinal,webDirTmp,errTitle,email,lockFile)
+					inspectorMod.genFlag(completePath,errTitle,email,lockFile)
+					inspectorMod.checkFile(completePath,errTitle,email,lockFile)
+					inspectorMod.deleteFile(completeDir + "/" + fileCompress,errTitle,email,lockFile)
 
 # Delete lock file
 inspectorMod.deleteFile(lockFile,errTitle,email,lockFile)

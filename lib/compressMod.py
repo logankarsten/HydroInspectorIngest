@@ -387,3 +387,24 @@ def compressNWM(fileIn,fileOut,nwmType,metaFile,errTitle,emailAddy,lockFile,init
                                                          errTitle,emailAddy,lockFile)
    main(metaFile,nwmType,fileOut,files_list,errTitle,emailAddy,lockFile,initTime,validTime,\
         isGEOGRID=geogrid,isGIS=gis_file,isCompress=True)
+
+def compressV11Forcing(fileIn,errTitle,emailAddy,lockFile):
+	# This is a function for handling new v11 or higher forcing files. Most files now come
+	# post-processed. However, RAINRATE in the forcing files are not compressed. This 
+	# function converts them to mm/hr and adds a scale_factor / add_offset.
+
+	from netCDF4 import Dataset
+
+	# Open file into append mode
+	idIn = Dataset(fileIn,'a')
+
+	# Add scale_factor / add_offset attributes
+	idIn.variables['RAINRATE'].scale_factor = 1.0
+	idIn.variables['RAINRATE'].add_offset = 0.0
+	# Convert mm/s to mm/hr and apply 
+	idIn.variables['RAINRATE'][:,:,:] = idIn.variables['RAINRATE'][:,:,:]*3600.0
+	idIn.variables['RAINRATE'].units = 'mm hr^-1'
+
+	# Close file
+	idIn.close()
+	

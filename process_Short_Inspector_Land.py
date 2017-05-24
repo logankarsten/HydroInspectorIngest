@@ -23,10 +23,10 @@ warningTitle = 'Warning_Process_Short_Land_Inspector'
 lockFile = '/home/karsten/tmp/Process_Short_Land_Inspector.LOCK'
 completeDir = '/d4/karsten/NWM_INSPECTOR/Short'
 email = 'karsten@ucar.edu'
-hoursBack = 12
-hoursLag = 2
+hoursBack = 24
+hoursLag = 1
 webDirTmp = '/d2/karsten/INSPECTOR_TMP'
-webDirFinal = '/d2/hydroinspector_data/tmp/conus/short_range'
+webDirFinal = '/d2/hydroinspector_data/tmp/conus/prod/short_range'
 metaLandPath = '/d4/karsten/NWM_INSPECTOR/geospatialMetaData/WRF_Hydro_NWM_v1.1_geospatial_data_template_land_GIS.nc'
 metaChanPath = '/d4/karsten/NWM_INSPECTOR/geospatialMetaData/WRF_Hydro_NWM_v1.1_geospatial_data_template_channel_point_netcdf.nc'
 metaRtPath = '/d4/karsten/NWM_INSPECTOR/geospatialMetaData/WRF_Hydro_NWM_v1.1_geospatial_data_template_terrain_GIS.nc'
@@ -50,7 +50,7 @@ for hourBack in range(hoursBack,hoursLag,-1):
 	dStr2Cycle = dCycle.strftime('%Y%m%d')
 
 	# Loop through forecast hours
-	for hrFcst in range(1,16):
+	for hrFcst in range(1,19):
 		dInit = dCycle
 		dValid = dCycle + datetime.timedelta(seconds=3*3600)
 		fStr = str(hrFcst)
@@ -65,20 +65,19 @@ for hourBack in range(hoursBack,hoursLag,-1):
 		completePath = completeDir + '/nwm.t' + hrStrCycle + \
 	                  'z.short_range.land.tm00.conus_' + dStr1Cycle + \
 							'_f' + fStr + '.COMPLETE'
-		fileDPath = 'nwm.t' + hrStrCycle + 'z.short_range.land.f' + fStr + '.conus.nc.gz'
+		fileDPath = 'nwm.t' + hrStrCycle + 'z.short_range.land.f' + fStr + '.conus.nc'
 		filePath = 'nwm.t' + hrStrCycle + 'z.short_range.land.f' + fStr + '.conus.nc'
 		fileCompress = 'nwm.' + dStr2Cycle + '_t' + hrStrCycle + '_f' + fStr + '.short_range.' + \
 	                  'land.conus.COMPRESS.nc'
 		ftpDir = '/pub/data/nccf/com/nwm/prod/nwm.' + dStr2Cycle + '/short_range'
 		if not os.path.isfile(completePath):
 			inspectorMod.downloadNWM(ftpDir,completeDir,fileDPath,filePath,errTitle,email,lockFile)
-			compressMod.compressNWM(completeDir + '/' + filePath,completeDir + '/' + fileCompress, \
-			                        'land',metaLandPath,errTitle,email,lockFile)
+			inspectorMod.renameFile(completeDir + '/' + fileDPath,completeDir + '/' + fileCompress, \
+                                 errTitle,email,lockFile)
 			inspectorMod.copyToWeb(completeDir + '/' + fileCompress,webDirTmp,errTitle,email,lockFile)
 			inspectorMod.shuffleFile(fileCompress,webDirFinal,webDirTmp,errTitle,email,lockFile)
 			inspectorMod.genFlag(completePath,errTitle,email,lockFile)
 			inspectorMod.checkFile(completePath,errTitle,email,lockFile)
-			inspectorMod.deleteFile(completeDir + "/" + filePath,errTitle,email,lockFile)
 			inspectorMod.deleteFile(completeDir + "/" + fileCompress,errTitle,email,lockFile)
 
 # Delete lock file

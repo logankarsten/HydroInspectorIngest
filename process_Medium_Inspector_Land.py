@@ -26,7 +26,7 @@ email = 'karsten@ucar.edu'
 hoursBack = 36
 hoursLag = 5
 webDirTmp = '/d2/karsten/INSPECTOR_TMP'
-webDirFinal = '/d2/hydroinspector_data/tmp/conus/medium_range'
+webDirFinal = '/d2/hydroinspector_data/tmp/conus/prod/medium_range'
 metaLandPath = '/d4/karsten/NWM_INSPECTOR/geospatialMetaData/WRF_Hydro_NWM_v1.1_geospatial_data_template_land_GIS.nc'
 metaChanPath = '/d4/karsten/NWM_INSPECTOR/geospatialMetaData/WRF_Hydro_NWM_v1.1_geospatial_data_template_channel_point_netcdf.nc'
 metaRtPath = '/d4/karsten/NWM_INSPECTOR/geospatialMetaData/WRF_Hydro_NWM_v1.1_geospatial_data_template_terrain_GIS.nc'
@@ -49,7 +49,7 @@ for hourBack in range(hoursBack,hoursLag,-1):
 	dStr1Cycle = dCycle.strftime('%Y%m%d%H')
 	dStr2Cycle = dCycle.strftime('%Y%m%d')
 
-	if hrStrCycle == '06':
+	if hrStrCycle == '06' or hrStrCycle == '12' or hrStrCycle == '18' or hrStrCycle == '00':
 		# Loop through forecast hours
 		for hrFcst in range(3,243,3):
 			dInit = dCycle
@@ -66,20 +66,19 @@ for hourBack in range(hoursBack,hoursLag,-1):
 			completePath = completeDir + '/nwm.t' + hrStrCycle + \
 		                  'z.medium_range.land.tm00.conus_' + dStr1Cycle + \
 								'_f' + fStr + '.COMPLETE'
-			fileDPath = 'nwm.t' + hrStrCycle + 'z.medium_range.land.f' + fStr + '.conus.nc.gz'
+			fileDPath = 'nwm.t' + hrStrCycle + 'z.medium_range.land.f' + fStr + '.conus.nc'
 			filePath = 'nwm.t' + hrStrCycle + 'z.medium_range.land.f' + fStr + '.conus.nc'
 			fileCompress = 'nwm.' + dStr2Cycle + '_t' + hrStrCycle + '_f' + fStr + '.medium_range.' + \
 		                  'land.conus.COMPRESS.nc'
 			ftpDir = '/pub/data/nccf/com/nwm/prod/nwm.' + dStr2Cycle + '/medium_range'
 			if not os.path.isfile(completePath):
 				inspectorMod.downloadNWM(ftpDir,completeDir,fileDPath,filePath,errTitle,email,lockFile)
-				compressMod.compressNWM(completeDir + '/' + filePath,completeDir + '/' + fileCompress, \
-				                        'land',metaLandPath,errTitle,email,lockFile)
+				inspectorMod.renameFile(completeDir + '/' + fileDPath,completeDir + '/' + fileCompress, \
+                                    errTitle,email,lockFile)
 				inspectorMod.copyToWeb(completeDir + '/' + fileCompress,webDirTmp,errTitle,email,lockFile)
 				inspectorMod.shuffleFile(fileCompress,webDirFinal,webDirTmp,errTitle,email,lockFile)
 				inspectorMod.genFlag(completePath,errTitle,email,lockFile)
 				inspectorMod.checkFile(completePath,errTitle,email,lockFile)
-				inspectorMod.deleteFile(completeDir + "/" + filePath,errTitle,email,lockFile)
 				inspectorMod.deleteFile(completeDir + "/" + fileCompress,errTitle,email,lockFile)
 
 # Delete lock file
